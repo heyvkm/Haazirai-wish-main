@@ -9,6 +9,11 @@ def main():
     # its type of dict that store state
     # https://docs.streamlit.io/develop/api-reference/caching-and-state/st.session_state
     
+    st.set_page_config(
+        page_title='Haazir AI - Making Attendance faster using Ai',
+        page_icon="https://i.ibb.co/gL8QsZxd/logo.png"
+    )
+    
     if 'login_type' not in st.session_state: #when app open by default empty so check
         st.session_state['login_type'] = None
         

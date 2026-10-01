@@ -17,7 +17,7 @@ def attendance_result_dialog(df,logs):
             try:
                 create_attendance(logs)
                 st.toast('Attendance taken')
-                st.session_state.attendance_images=[]
+                st.session_state.attendance_image=[]
                 st.rerun()
             
             except Exception as e:
