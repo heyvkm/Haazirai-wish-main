@@ -87,8 +87,9 @@ def predict_attendance(class_image_np):
     
     model_data=get_trained_model()
     
-    if not model_data:
-        return detected_student
+    if model_data is None:
+        print("No trained model")
+        return {}, [], len(encodings)
     
     clf=model_data['clf']
     X_train=model_data['X']
@@ -108,10 +109,10 @@ def predict_attendance(class_image_np):
         
         best_match_score=np.linalg.norm(student_embedding-encoding)
         
-        resemblance_threshold=0.6
+        # resemblance_threshold=0.6
         
-        if best_match_score<=resemblance_threshold: 
+        if best_match_score<=0.6: 
             detected_student[predicted_id]=True
             
     
-    return detected_student,all_students,len(encoding)
+    return detected_student, all_students, len(encodings)
