@@ -16,8 +16,6 @@ def create_subject_dialog(teacher_id):
             try:
                 create_subjects(sub_code,sub_name,sub_section,teacher_id)
                 st.toast("Subject created successfully!")
-                import time
-                time.sleep(1)
                 st.rerun()
             except Exception as e:
                 st.error (f"Error:{str(e)}") 

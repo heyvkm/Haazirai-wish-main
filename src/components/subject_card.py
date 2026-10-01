@@ -27,7 +27,7 @@ def subject_card(name, code, section, stats, footer_callback=None):
                     
         st.divider()
         
-        # 3. FIXED: Using the accurate argument name to handle the button inside the layout boundary
+        #3. FIXED: Using the accurate argument name to handle the button inside the layout boundary
         if footer_callback:
             if st.button(f"Share Code: {name}", key=f"share_{code}", icon=":material/share:", use_container_width=True):
                 footer_callback(name, code)
