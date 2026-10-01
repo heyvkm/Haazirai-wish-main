@@ -1,6 +1,6 @@
 import streamlit as st
 
-def subject_card(name, code, section, stats, footer_callback=None):
+def subject_card(name, code, section, stats, footer_callback=None,action_type='share'):
     """
     Renders a styled subject card with metric tracking blocks and a built-in share button.
     """
@@ -27,7 +27,13 @@ def subject_card(name, code, section, stats, footer_callback=None):
                     
         st.divider()
         
-        #3. FIXED: Using the accurate argument name to handle the button inside the layout boundary
+        # Render button based on action_type
         if footer_callback:
-            if st.button(f"Share Code: {name}", key=f"share_{code}", icon=":material/share:", use_container_width=True):
-                footer_callback(name, code)
+            if action_type == 'unenroll':
+                # Dynamically renders the Unenroll button with a unique key
+                if st.button('Unenroll from this course', key=f"unenroll_{code}", type='tertiary', use_container_width=True):
+                    footer_callback()
+            else:
+                # Default fallback fallback to original Share button behavior
+                if st.button(f"Share Code: {name}", key=f"share_{code}", icon=":material/share:", use_container_width=True):
+                    footer_callback(name, code)
