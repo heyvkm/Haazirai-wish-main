@@ -19,9 +19,10 @@ def header_dashboard():
     logo_url="https://i.ibb.co/gL8QsZxd/logo.png"
     
     st.markdown(f"""
-        <div style='display:flex; align-items:center; justify-content:center; margin-top:30px; gap:10'>       
+        <div style='display:flex; align-items:center; justify-content:center; margin-top:20px; margin-bottom:10px; gap:20'>       
             <img src='{logo_url}' style='height:80px'/>
-            <h2 style='text-algin:center; color:#5865F2'>Haazir AI</h1>
+            <h2 style='margin:0; padding-left:7px; color:#5865F2'>Haazir AI</h2>
+            
         </div>       
                 """,unsafe_allow_html=True)
     

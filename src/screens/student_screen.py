@@ -42,6 +42,9 @@ def student_dashboard():
     
     with st.spinner('Loading your enrolled subjects..'):
         subjects=get_student_subject(student_id)
+        if not subjects:
+            st.info("You are not enrolled in any subject.")
+            return
         logs=get_student_attendance(student_id)
         
     stats_map={}
@@ -66,25 +69,34 @@ def student_dashboard():
         
         stats=stats_map.get(sid,{"total":0,"attended":0})
         
+        percentage = (
+            round((stats["attended"] / stats["total"]) * 100, 1)
+            if stats["total"] > 0
+            else 0
+        )
+        
+        
         def unenroll_btn():
+            if st.button('Unenroll from this course', key=f"unenroll_{sub['subject_code']}", type='tertiary', width='stretch'):
                 unenroll_student_to_subject(student_id,sid)
                 st.toast(f"Unenrolled from {sub['name']} successfully!")
                 st.rerun()
              
                 
-            
+          
         
         with cols[i%2]:
             subject_card(
                 name=sub['name'], 
                 code=sub['subject_code'], 
                 section=sub['section'], 
-                stats={
-                    ('🗓️','Total',stats['total']),
-                    ('✅','Attended',stats['attended']), 
-                    }, 
+                stats=[
+                    ("🗓️", "Total Classes", stats["total"]),
+                    ("✅", "Present", stats["attended"]),
+                    ("❌","absent", stats["total"] - stats["attended"]),
+                    ("🙋‍♂️", "Attendance", f"{percentage}%"),
+                ],
                 footer_callback=unenroll_btn, 
-                action_type='unenroll' 
                 
             )
         
@@ -122,7 +134,7 @@ def student_screen():
     if photo_src:
         img=np.array(Image.open(photo_src))
         
-        with st.spinner('Ai is scanning..'):
+        with st.spinner("AI is scanning your face..."):
             detected,all_id,num_faces=predict_attendance(img)
             
             if num_faces==0:
@@ -139,7 +151,7 @@ def student_screen():
                         st.session_state.is_logged_in=True
                         st.session_state.user_role='student'
                         st.session_state.student_data=student
-                        st.toast(f'Welcome Back!{student['name']}')
+                        st.toast(f"Welcome Back! {student['name']}")
                         time.sleep(1)
                         st.rerun()
                 else:
@@ -180,7 +192,7 @@ def student_screen():
                                 st.session_state.is_logged_in=True
                                 st.session_state.user_role='student'
                                 st.session_state.student_data=response_data[0]
-                                st.toast(f'Profit Created! Hi {new_name}')
+                                st.toast(f'Profile Created! Hi {new_name}')
                                 time.sleep(1)
                                 st.rerun()       
                         else:

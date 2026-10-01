@@ -2,7 +2,7 @@ import streamlit as st
 
 from src.ui.base_layout import style_background_dashboard,style_base_layout
 from src.components.header import header_dashboard
-from src.database.db import create_teacher,check_teacher_exists,teacher_login,get_teacher_subjects
+from src.database.db import create_teacher,check_teacher_exists,teacher_login,get_teacher_subjects,get_attendance_for_teacher
 from src.components.create_subject_dialog import create_subject_dialog
 from src.components.share_subject_dialog import share_subject_dialog
 from src.components.subject_card import subject_card
@@ -92,8 +92,10 @@ def teacher_tab_take_attendance():
         st.session_state.attendance_image=[]
     
     subjects=get_teacher_subjects(teacher_id)
+    
     if not subjects:
         st.warning('You havent created any subject ! Plz create one to began!')
+        return
         
     subjects_options={f"{s['name']}-{s['subject_code']}":s['subject_id'] for s in subjects}
         
@@ -167,14 +169,13 @@ def teacher_tab_take_attendance():
                             })
                             
                             attendance_to_log.append({
-                                'subject_id':student['student_id'],
-                                'student_id':selected_subject_id,
-                                'timestamp':current_timestamp,
-                                'is_present':bool(is_present)
-                                
+                                'subject_id': selected_subject_id,
+                                'student_id': student['student_id'],
+                                'timestamp': current_timestamp,
+                                'is_present': bool(is_present)
                             })
                             
-                    attendance_result_dialog(pd.DataFrame(results),attendance_to_log)
+                        attendance_result_dialog(pd.DataFrame(results),attendance_to_log)
                         
                     
                              
@@ -212,8 +213,9 @@ def teacher_tab_manage_subjects():
                 ("⏰", "Classes", sub['total_classes']),
             ]
         
-            def share_btn(name, code):
-              share_subject_dialog(name, code)
+            def share_btn():
+                if st.button(f"Share Code: {sub['subject_code']}", key=f"share_{sub['subject_code']}", icon=":material/share:", width='stretch'):
+                    share_subject_dialog(sub['name'],sub['subject_code'])
         
             subject_card(
                 name=sub['name'],
@@ -233,6 +235,61 @@ def teacher_tab_manage_subjects():
     
 def teacher_tab_attendance_records():
     st.header('Attendance Records')
+    teacher_id=st.session_state.teacher_data['teacher_id']
+    
+    records=get_attendance_for_teacher(teacher_id)
+    
+    if not records:
+        st.info("No attendance records found.")
+        return
+    data = []
+
+    for r in records:
+        dt = datetime.fromisoformat(r["timestamp"])
+
+        data.append({
+            "Time": dt.strftime("%d-%m-%Y %I:%M %p"),
+            "Student": r["students"]["name"],
+            "Subject": r["subjects"]["name"],
+            "Code": r["subjects"]["subject_code"],
+            "Status": "Present ✅" if r["is_present"] else "Absent ❌"
+        })
+
+    df = pd.DataFrame(data)
+
+    # ---------- Filters ----------
+    col1, col2 = st.columns(2)
+
+    with col1:
+        subject = st.selectbox(
+            "Filter by Subject",
+            ["All"] + sorted(df["Subject"].unique().tolist())
+        )
+
+    with col2:
+        status = st.selectbox(
+            "Filter by Status",
+            ["All", "Present ✅", "Absent ❌"]
+        )
+
+    if subject != "All":
+        df = df[df["Subject"] == subject]
+
+    if status != "All":
+        df = df[df["Status"] == status]
+
+    st.divider()
+
+    st.dataframe(df, width='stretch',hide_index=True)
+
+    st.download_button("📥 Download CSV",
+        df.to_csv(index=False).encode("utf-8"),
+        file_name="attendance_records.csv",
+        mime="text/csv",
+        use_container_width=True
+    )
+    
+    
         
     
     
