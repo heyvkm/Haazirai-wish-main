@@ -87,7 +87,7 @@ def teacher_tab_take_attendance():
     subjects_options={f"{s['name']}-{s['subject_code']}":s['subject_id'] for s in subjects}
         
         
-    col1,col2=st.columns([3,1])
+    col1,col2=st.columns([3,1],vertical_alignment='bottom')
     with col1:
         selected_subject_labels=st.selectbox('Select Subject',options=list(subjects_options.keys()))
         
@@ -98,7 +98,35 @@ def teacher_tab_take_attendance():
     selected_subject_id=subjects_options[selected_subject_labels]
     
     st.divider()
-        
+    
+    if st.session_state.attendance_image:
+        st.header('Added Photos')
+
+        photo_cols=st.columns(4)
+
+        for idx,img in enumerate(st.session_state.attendance_image):
+            with photo_cols[idx%4]:
+                st.image(img,width='stretch',caption=f"photo {idx+1}")
+
+        has_photo=bool(st.session_state.attendance_image)       
+        c1,c2,c3=st.columns(3)
+        with c1:
+            if st.button('Clear all photos',width='stretch',type='tertiary',icon=':material/delete_history:',disabled=not has_photo):
+                st.session_state.attendance_image=[]
+                st.rerun()
+
+        with c2:
+            has_photo=bool(st.session_state.attendance_image)
+            st.button('Run Face Analysis',width='stretch',type='secondary',icon=':material/conditions:',disabled=not has_photo)
+        with c3:
+            st.button('Voice (Coming soon)',width='stretch',type='primary',icon=':material/adaptive_audio_mic:',disabled=True)
+            # Use Voice Attendance
+                
+            
+    
+    
+    
+    
     
     
     
@@ -135,6 +163,9 @@ def teacher_tab_manage_subjects():
             )
     else:
         st.info("No SUBJECT FOUND. CREATE IT..")
+    
+    
+
             
     
     
