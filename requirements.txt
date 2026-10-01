@@ -16,3 +16,7 @@ segno
 pillow #image preprocessing ->open/resize/crop/process
 
 streamlit
+
+# For voice
+librosa  #for manipulation/loading,add noise handling
+resemblyzer #for voice similarity/speaker embeddings
