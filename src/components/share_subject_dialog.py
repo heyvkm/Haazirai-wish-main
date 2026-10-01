@@ -16,7 +16,6 @@ def share_subject_dialog(sub_name,sub_code):
     with col1:
         st.markdown('Copy Link')
         st.code(join_url,language="text")
-        st.markdown('')
         st.code(sub_code,language="text")
         st.info('Copy this link to share')
     with col2:

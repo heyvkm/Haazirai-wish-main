@@ -35,5 +35,5 @@ def subject_card(name, code, section, stats, footer_callback=None,action_type='s
                     footer_callback()
             else:
                 # Default fallback fallback to original Share button behavior
-                if st.button(f"Share Code: {name}", key=f"share_{code}", icon=":material/share:", use_container_width=True):
-                    footer_callback(name, code)
+                st.button(f"Share Code: {code}", key=f"share_{code}", icon=":material/share:", use_container_width=True)
+                    # footer_callback(name, code)
