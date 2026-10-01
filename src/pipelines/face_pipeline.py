@@ -64,7 +64,7 @@ def get_trained_model():
     if len(X)==0:
         return 0
     
-    clf=SVC(kernal='lenear',probability=True, class_weight='balanced')
+    clf=SVC(kernel='linear',probability=True, class_weight='balanced')
     
     try:
         clf.fit(X,Y)
@@ -97,7 +97,7 @@ def predict_attendance(class_image_np):
     all_students=sorted(list(set(Y_train)))
     
     for encoding in encodings:
-        if len(get_all_students)>=2:
+        if len(all_students)>=2:
             predicted_id=int(clf.predict([encoding])[0])
             
         else:
