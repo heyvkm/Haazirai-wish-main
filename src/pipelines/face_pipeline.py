@@ -82,6 +82,9 @@ def train_classifier():
 def predict_attendance(class_image_np):
     encodings=get_face_embedding(class_image_np)
     
+    if encodings is None or len(encodings) == 0:
+        return {}, [], 0
+    
     
     detected_student={}
     

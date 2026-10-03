@@ -12,6 +12,8 @@ import time
 
 from src.components.enroll_dialog import enroll_dialog
 from src.components.subject_card import subject_card
+from src.components.unenroll_confirmation_dialog import unenroll_confirm_dialog
+from src.components.already_registered_dialog import already_registered_dialog
 
 def student_dashboard():
     # st.header('Student_dashboard')
@@ -78,9 +80,8 @@ def student_dashboard():
         
         def unenroll_btn():
             if st.button('Unenroll from this course', key=f"unenroll_{sub['subject_code']}", type='tertiary', width='stretch'):
-                unenroll_student_to_subject(student_id,sid)
-                st.toast(f"Unenrolled from {sub['name']} successfully!")
-                st.rerun()
+                unenroll_confirm_dialog(student_id=student_id,subject_id=sid,subject_name=sub["name"])
+        
              
                 
           
@@ -148,12 +149,14 @@ def student_screen():
                     student=next((s for s in all_students if s['student_id']==student_id),None)
                     
                     if student:
+                        # already_registered_dialog(student)                    
                         st.session_state.is_logged_in=True
                         st.session_state.user_role='student'
                         st.session_state.student_data=student
                         st.toast(f"Welcome Back! {student['name']}")
                         time.sleep(1)
-                        st.rerun()
+                        st.rerun() 
+                        
                 else:
                     st.info('face not recognized! you might be a new student!') 
                     show_registration=True
@@ -161,7 +164,8 @@ def student_screen():
     if show_registration:
         with st.container(border=True):
             st.header('Register new Profile')
-            new_name=st.text_input("Enter your name",placeholder='E.g. Wish Maur')
+            new_name=st.text_input("Enter your name",placeholder='E.g. Vishal Maurya')
+            new_name = new_name.strip().title()
             
             st.subheader('Optional: Voice Enrollment')
             st.info("Enroll your voice for attendance")

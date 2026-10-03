@@ -9,6 +9,10 @@ def create_subject_dialog(teacher_id):
     sub_code = st.text_input("Subject Code", placeholder="e.g. CS-101")
     sub_section = st.text_input("Section",placeholder="e.g. A")
     
+    sub_name = sub_name.strip().title()
+    sub_code = sub_code.strip().upper()
+    sub_section = sub_section.strip().upper()
+    
     st.divider()
     
     if st.button("Create Subject Now",type='primary', width='stretch'):

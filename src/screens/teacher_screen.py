@@ -341,7 +341,7 @@ def teacher_screen_login():
     st.space()
     st.space()
     
-    teacher_username=st.text_input("Enter username",placeholder='@wish')
+    teacher_username=st.text_input("Enter username",placeholder='@imran15')
     teacher_pass=st.text_input("Enter password",type='password',placeholder='Enter your password')
     
     st.divider()
@@ -377,8 +377,10 @@ def teacher_screen_register():
     st.space()
     #st.space()
     
-    teacher_username=st.text_input("Enter username",placeholder='@wish')
-    teacher_name=st.text_input("Enter name",placeholder='wish')
+    teacher_username=st.text_input("Enter username",placeholder='@rishi042')
+    teacher_username = teacher_username.strip().lower()
+    teacher_name=st.text_input("Enter full name",placeholder='Eg: Rishikesh Gupta')
+    teacher_name=teacher_name.strip().title()
     teacher_pass=st.text_input("Enter password",type='password',placeholder='Enter your password')
     teacher_pass_confirm=st.text_input("Confirm password",type='password',placeholder='Confirm your password')
     
