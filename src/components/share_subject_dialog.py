@@ -4,8 +4,8 @@ import io
 
 @st.dialog("Share Class Link")
 def share_subject_dialog(sub_name,sub_code):
-    app_domain="haazirai-main.steamlit.app"
-    join_url=f"{app_domain}/?join-code={sub_code}"
+    APP_URL = "https://haazirai-main.streamlit.app"
+    join_url = f"{APP_URL}/?join-code={sub_code.upper()}"
     
     qr=segno.make(join_url)
     out=io.BytesIO()
@@ -19,7 +19,7 @@ def share_subject_dialog(sub_name,sub_code):
         st.code(sub_code,language="text")
         st.info("Share the link or QR code with your students.")
     with col2:
-        st.image(out.getvalue(),width='content',caption='Scan the QR Code to join the class')
+        st.image(out.getvalue(),width='content',caption='Scan the QR Code to join')
         
         
         

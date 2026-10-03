@@ -14,6 +14,15 @@ def main():
         page_icon="https://i.ibb.co/gL8QsZxd/logo.png"
     )
     
+    # Read query parameter
+    join_code = st.query_params.get("join-code")
+
+    # If app opened using share link
+    if join_code:
+        st.session_state["join_code"] = join_code.upper()
+        st.session_state["login_type"] = "student"
+    
+    
     if 'login_type' not in st.session_state: #when app open by default empty so check
         st.session_state['login_type'] = None
         
@@ -22,7 +31,7 @@ def main():
             teacher_screen()
         case 'student':
             student_screen()
-        case None:
+        case _:
             home_screen()
         
         
