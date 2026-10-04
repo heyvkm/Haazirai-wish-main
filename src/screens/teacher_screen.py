@@ -9,8 +9,8 @@ from src.components.subject_card import subject_card
 from src.components.add_photo_dialog import add_photo_dialog
 import numpy as np
 from src.pipelines.face_pipeline import predict_attendance
-
 from src.components.attendance_result_dialog import attendance_result_dialog
+from src.components.voice_attendance_dialog import voice_attendance_dialog
 
 from src.database.config import supabase
 from datetime import datetime
@@ -121,68 +121,71 @@ def teacher_tab_take_attendance():
             with photo_cols[idx%4]:
                 st.image(img,width='stretch',caption=f"photo {idx+1}")
 
-        has_photo=bool(st.session_state.attendance_image)       
-        c1,c2,c3=st.columns(3)
-        with c1:
-            if st.button('Clear all photos',width='stretch',type='tertiary',icon=':material/delete_history:',disabled=not has_photo):
-                st.session_state.attendance_image=[]
-                st.rerun()
 
-        with c2:
-            if st.button('Run Face Analysis',width='stretch',type='secondary',icon=':material/conditions:',disabled=not has_photo):
+    has_photo=bool(st.session_state.attendance_image)       
+    c1,c2,c3=st.columns(3)
+    with c1:
+        if st.button('Clear all photos',width='stretch',type='tertiary',icon=':material/delete_history:',disabled=not has_photo):
+            st.session_state.attendance_image=[]
+            st.rerun()
+
+    with c2:
+        if st.button('Run Face Analysis',width='stretch',type='secondary',icon=':material/conditions:',disabled=not has_photo):
+            
+            with st.spinner('🔍 AI is deep scanning your photo... Please wait...'):
+        
+                all_detected_ids={}
                 
-                with st.spinner('🔍 AI is deep scanning your photo... Please wait...'):
-            
-                    all_detected_ids={}
+                for idx,img in enumerate(st.session_state.attendance_image):
+                    img_np=np.array(img.convert('RGB'))
                     
-                    for idx,img in enumerate(st.session_state.attendance_image):
-                        img_np=np.array(img.convert('RGB'))
-                        
-                        detected,_,_,=predict_attendance(img_np)
-                        if detected:
-                            for sid in detected.keys():
-                                student_id=int(sid)
-                                
-                                all_detected_ids.setdefault(student_id,[]).append(f"photo {idx+1}")
-                                
+                    detected,_,_,=predict_attendance(img_np)
                     
-                    enrolled_res=supabase.table('subject_students').select("*,students(*)").eq('subject_id',selected_subject_id).execute()   
-                    enrolled_students=enrolled_res.data
-                    
-                    if not enrolled_students:
-                        st.warning("No students enrolled in this course")
-                    else:
-                        results,attendance_to_log=[],[] #show on screen & store in DB
-                        
-                        current_timestamp= datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-                        
-                        for node in enrolled_students:
-                            student=node['students']
-                            src=all_detected_ids.get(int(student['student_id']),[])
-                            is_present=len(src)>0
+                    if detected:
+                        for sid in detected.keys():
+                            student_id=int(sid)
                             
-                            results.append({
-                                "Name":student['name'],
-                                "ID":student['student_id'],
-                                "Source":", ".join(src) if is_present else "-",
-                                "Status":"✅Present" if is_present else "❌ Absent" 
-                            })
+                            all_detected_ids.setdefault(student_id,[]).append(f"photo {idx+1}")
                             
-                            attendance_to_log.append({
-                                'subject_id': selected_subject_id,
-                                'student_id': student['student_id'],
-                                'timestamp': current_timestamp,
-                                'is_present': bool(is_present)
-                            })
-                            
-                        attendance_result_dialog(pd.DataFrame(results),attendance_to_log)
-                        
+                
+                enrolled_res=supabase.table('subject_students').select("*,students(*)").eq('subject_id',selected_subject_id).execute()   
+                enrolled_students=enrolled_res.data
+                
+                if not enrolled_students:
+                    st.warning("No students enrolled in this course")
                     
-                             
-            
-        with c3:
-            st.button('Voice (Coming soon)',width='stretch',type='primary',icon=':material/adaptive_audio_mic:',disabled=True)
+                else:
+                    results,attendance_to_log=[],[] #show on screen & store in DB
+                    
+                    current_timestamp= datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+                    
+                    for node in enrolled_students:
+                        student=node['students']
+                        src=all_detected_ids.get(int(student['student_id']),[])
+                        is_present=len(src)>0
+                        
+                        results.append({
+                            "Name":student['name'],
+                            "ID":student['student_id'],
+                            "Source":", ".join(src) if is_present else "-",
+                            "Status":"✅Present" if is_present else "❌ Absent" 
+                        })
+                        
+                        attendance_to_log.append({
+                            'subject_id': selected_subject_id,
+                            'student_id': student['student_id'],
+                            'timestamp': current_timestamp,
+                            'is_present': bool(is_present)
+                        })
+                        
+                    attendance_result_dialog(pd.DataFrame(results),attendance_to_log)
+                    
+                            
+    with c3:
+        if st.button('Voice Attendance',width='stretch',type='primary',icon=':material/adaptive_audio_mic:'):
             # Use Voice Attendance
+            voice_attendance_dialog(selected_subject_id)
+            
                 
             
     

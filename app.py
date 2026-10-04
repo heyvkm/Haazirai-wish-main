@@ -18,7 +18,7 @@ def main():
     join_code = st.query_params.get("join-code")
 
     # If app opened using share link
-    if join_code:
+    if join_code and st.session_state.get("login_type") is None and "join_code" not in st.session_state:
         st.session_state["join_code"] = join_code.upper()
         st.session_state["login_type"] = "student"
     
